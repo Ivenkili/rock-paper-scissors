@@ -93,17 +93,17 @@
   </style>
 </head>
 <body>
-  <div class="game-container">
+  <main class="game-container">
     <h1>Rock, Paper, Scissors!</h1>
     <div class="buttons">
-      <button data-choice="rock">🪨 Rock</button>
-      <button data-choice="paper">📄 Paper</button>
-      <button data-choice="scissors">✂️ Scissors</button>
+      <button type="button" data-choice="rock" aria-label="Rock">🪨 Rock</button>
+      <button type="button" data-choice="paper" aria-label="Paper">📄 Paper</button>
+      <button type="button" data-choice="scissors" aria-label="Scissors">✂️ Scissors</button>
     </div>
     <div class="results" id="result">Make your move!</div>
     <div class="score" id="score">You: 0 | Computer: 0</div>
-    <button id="restart">🔄 Restart</button>
-  </div>
+    <button type="button" id="restart">🔄 Restart</button>
+  </main>
 
   <script>
     const buttons = document.querySelectorAll("button[data-choice]");
@@ -115,8 +115,31 @@
     let userScore = 0;
     let computerScore = 0;
 
+    function getResult(user, computer) {
+      if (user === computer) return "draw";
+      if (
+        (user === "rock" && computer === "scissors") ||
+        (user === "paper" && computer === "rock") ||
+        (user === "scissors" && computer === "paper")
+      ) {
+        return "win";
+      } else {
+        return "lose";
+      }
+    }
+
+    function resetGame() {
+      userScore = 0;
+      computerScore = 0;
+      result.textContent = "Make your move!";
+      scoreDisplay.textContent = `You: 0 | Computer: 0`;
+      buttons.forEach(btn => btn.disabled = false);
+    }
+
     buttons.forEach(button => {
       button.addEventListener("click", () => {
+        if (userScore === 3 || computerScore === 3) return;
+
         const userChoice = button.dataset.choice;
         const computerChoice = choices[Math.floor(Math.random() * 3)];
         const outcome = getResult(userChoice, computerChoice);
@@ -132,29 +155,17 @@
         }
 
         scoreDisplay.textContent = `You: ${userScore} | Computer: ${computerScore}`;
+
+        if (userScore === 3 || computerScore === 3) {
+          result.innerHTML += `<br><strong>${userScore === 3 ? "🏆 You win the round!" : "🤖 Computer wins this round!"}</strong>`;
+          buttons.forEach(btn => btn.disabled = true);
+        }
       });
     });
 
-    function getResult(user, computer) {
-      if (user === computer) return "draw";
-
-      if (
-        (user === "rock" && computer === "scissors") ||
-        (user === "paper" && computer === "rock") ||
-        (user === "scissors" && computer === "paper")
-      ) {
-        return "win";
-      } else {
-        return "lose";
-      }
-    }
-
-    restartBtn.addEventListener("click", () => {
-      userScore = 0;
-      computerScore = 0;
-      result.textContent = "Make your move!";
-      scoreDisplay.textContent = `You: 0 | Computer: 0`;
-    });
+    restartBtn.addEventListener("click", resetGame);
   </script>
 </body>
 </html>
+<!-- This is a simple Rock, Paper, Scissors game. The user can play against the computer. The game keeps track of the score and announces the winner when someone reaches 3 points. -->
+<!-- The game can be restarted by clicking the restart button. The design is responsive and uses a gradient background with a modern look. -->
